@@ -34,7 +34,7 @@
 -- +--------------+--------------+
 -- | [0-5>        | 3            |
 -- | [5-10>       | 1            |
--- | [10-15>      | 0            |
+-- | [10-15>      | 0	            |
 -- | 15 or more   | 1            |
 -- +--------------+--------------+
 
@@ -44,6 +44,19 @@
 -- For session_id 5 has a duration greater or equal than 15 minutes.
 
 -- Solution 2
+
+WITH main AS(SELECT 
+CASE WHEN duration/60>=0 AND duration/60<5 THEN "0-5"
+WHEN duration/60>5 AND duration/60<10 THEN "5-10"
+WHEN duration/60>10 AND duration/60<15 THEN "10-15"
+WHEN duration/60>15  THEN "15 AND MORE"
+ELSE "0"
+END AS bid,session_id
+ FROM Sessions)
+ 
+ SELECT COUNT(bid) total,bid FROM main
+ GROUP BY bid
+
 (Select '[0-5>' as bin, 
  sum(case when duration/60 < 5 then 1 else 0 end) as total from Sessions)
  union
@@ -55,3 +68,6 @@
  union
 (Select '15 or more' as bin, 
  sum(case when duration/60 >= 15 then 1 else 0 end) as total from Sessions)
+ 
+ 
+ 
